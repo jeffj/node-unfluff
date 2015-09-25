@@ -85,7 +85,7 @@ convertToText = (doc, topNode) ->
   txts = _.filter txts, (txt) ->
     regex.test(txt)
 
-  txts.join('\n\n')
+  txts
 
 addNewlineToBr = (doc, topNode) ->
   brs = topNode.find("br")
