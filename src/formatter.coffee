@@ -66,7 +66,7 @@ convertToHTML = (doc, topNode) ->
     # pop it out as if it was a paragraph tag
     if hangingText.length > 0
       txt = cleanParagraphText(hangingText)
-      txt = txt.split(/\r?\n/)
+      # txt = txt.split(/\r?\n/)
       txts = txts.concat(txt)
       hangingText = ""
 
@@ -92,14 +92,14 @@ convertToHTML = (doc, topNode) ->
       txt = cleanParagraphText(txt)
       if txt.length > 0
         txt = txt.replace(/(\w+\.)([A-Z]+)/, '$1 $2')
-        txt = txt.split(/\r?\n/)
+        # txt = txt.split(/\r?\n/)
         txts = txts.concat(txt)
 
 
   # Catch any left-over hanging text nodes
   if hangingText.length > 0
     txt = cleanParagraphText(hangingText)
-    txt = txt.split(/\r?\n/)
+    # txt = txt.split(/\r?\n/)
     txts = txts.concat(txt)
   txts = txts.filter (txt) -> txt.length > 0
   txts = txts.map (txt) ->
