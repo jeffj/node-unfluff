@@ -128,12 +128,12 @@ module.exports =
             text: text,
             href: href
           })
-      
+
     if topNode
       topNode = postCleanup(doc, topNode, lang)
       gatherLinks(doc, topNode)
     links
-      
+
   # Find any embedded videos in the doc
   videos: (doc, topNode) ->
     videoList = []
@@ -302,6 +302,15 @@ module.exports =
 
         if parentNodes.indexOf(parentParentParentNode[0]) == -1
           parentNodes.push(parentParentParentNode[0])
+
+      parentFourNode = parentParentParentNode.parent()
+
+      if parentFourNode
+        updateNodeCount(parentFourNode, 1)
+        updateScore(parentFourNode, upscore)
+
+        if parentNodes.indexOf(parentFourNode[0]) == -1
+          parentNodes.push(parentFourNode[0])
 
       cnt += 1
       i += 1
