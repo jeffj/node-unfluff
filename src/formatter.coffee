@@ -41,7 +41,7 @@ cleanParagraphText = (rawText) ->
 
 convertToHTML = (doc, topNode) ->
   txts = []
-  nodes = topNode.find("p,ul,img")
+  nodes = topNode.find("*")
 
   # To hold any text fragments that end up in text nodes outside of
   # html elements
@@ -89,10 +89,11 @@ convertToHTML = (doc, topNode) ->
       txts = txts.concat('<img src="'+src+'"/>')
 
     txt = cleanParagraphText(node.text())
-    txt = txt.replace(/(\w+\.)([A-Z]+)/, '$1 $2')
-    txt = txt.split(/\r?\n/)
-    txt = '<p>'+txt+'</p>'
-    txts = txts.concat(txt)
+    if txt.length > 0
+      txt = txt.replace(/(\w+\.)([A-Z]+)/, '$1 $2')
+      txt = txt.split(/\r?\n/)
+      txt = '<p>'+txt+'</p>'
+      txts = txts.concat(txt)
   # Catch any left-over hanging text nodes
   if hangingText.length > 0
     txt = cleanParagraphText(hangingText)
