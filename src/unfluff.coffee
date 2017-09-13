@@ -31,6 +31,7 @@ module.exports = unfluff = (html, language) ->
   pageData.videos = extractor.videos(doc, topNode)
   pageData.links = extractor.links(doc, topNode, lng)
   pageData.text = extractor.text(doc, topNode, lng)
+  pageData.html = extractor.html(doc, topNode, lng)
 
   pageData
 

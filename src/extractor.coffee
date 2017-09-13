@@ -89,6 +89,15 @@ module.exports =
     return cleanTitle(titleText, ["|", " - ", "»"])
 
 
+  # Grab the 'html'  chunk
+  html: (doc, topNode, lang) ->
+    if topNode
+      topNode = postCleanup(doc, topNode, lang)
+      html = true
+      formatter(doc, topNode, lang, html)
+    else
+      ""
+
   # Grab the 'main' text chunk
   text: (doc, topNode, lang) ->
     if topNode

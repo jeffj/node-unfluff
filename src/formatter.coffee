@@ -2,13 +2,16 @@ stopwords = require("./stopwords")
 _ = require("lodash")
 {XRegExp} = require('xregexp')
 
-module.exports = formatter = (doc, topNode, language) ->
+module.exports = formatter = (doc, topNode, language, html) ->
   removeNegativescoresNodes(doc, topNode)
   linksToText(doc, topNode)
   addNewlineToBr(doc, topNode)
   replaceWithText(doc, topNode)
   removeFewwordsParagraphs(doc, topNode, language)
-  return convertToText(doc, topNode)
+  if html
+    return convertToHTML(doc, topNode)
+  else
+    return convertToText(doc, topNode)
 
 linksToText = (doc, topNode) ->
   nodes = topNode.find('a')
@@ -35,6 +38,70 @@ cleanParagraphText = (rawText) ->
   txt = rawText.trim()
   txt.replace(/[\s\t]+/g, ' ')
   txt
+
+convertToHTML = (doc, topNode) ->
+  txts = []
+  nodes = topNode.find("p,ul,img")
+
+  # To hold any text fragments that end up in text nodes outside of
+  # html elements
+  hangingText = ""
+
+  nodes.each () ->
+    node = doc(this)
+    nodeType = node[0].type
+    nodeName = node[0].name
+
+    # Handle top level text nodes by adding them to a running list
+    # and then treating all the hanging nodes as one paragraph tag
+    if nodeType == "text"
+      hangingText += node.text()
+      # Same as 'continue'
+      return true
+    else if nodeName == "ul"
+      hangingText += ulToText(doc, node)
+      return true
+
+    # If we hit a real node and still have extra acculated text,
+    # pop it out as if it was a paragraph tag
+    if hangingText.length > 0
+      txt = cleanParagraphText(hangingText)
+      txt = txt.split(/\r?\n/)
+      txt = '<p>'+txt+'</p>'
+      txts = txts.concat(txt)
+      hangingText = ""
+
+
+    # Find images and add them to the array
+    # img = node.find('img')
+    if nodeName == "img"
+      attrs = node[0].attribs
+      src = '';
+      if attrs['src']
+        src = attrs['src']
+      else if attrs['srcset']
+        src = attrs['srcset']
+      else if attrs['data-src']
+        src = attrs['data-src']
+      else if attrs['data-srcset']
+        src = attrs['data-srcset']
+
+      txts = txts.concat('<img src="'+src+'"/>')
+      console.log(txts, 'txts')
+
+    txt = cleanParagraphText(node.text())
+    txt = txt.replace(/(\w+\.)([A-Z]+)/, '$1 $2')
+    txt = txt.split(/\r?\n/)
+    txt = '<p>'+txt+'</p>'
+    txts = txts.concat(txt)
+  # Catch any left-over hanging text nodes
+  if hangingText.length > 0
+    txt = cleanParagraphText(hangingText)
+    txt = txt.split(/\r?\n/)
+    txt = '<p>'+txt+'</p>'
+    txts = txts.concat(txt)
+
+  txts.join('')
 
 # Turn an html element (and children) into nicely formatted text
 convertToText = (doc, topNode) ->
@@ -114,6 +181,10 @@ removeFewwordsParagraphs = (doc, topNode, language) ->
     el = doc(this)
     tag = el[0].name
     text = el.text()
+
+    ## Dont remove images we need them for HTML parsing
+    if tag == 'img' || el.find('img').length > 0
+      return false
 
     stopWords = stopwords(text, language)
     if (tag != 'br' || text != '\\r') && stopWords.stopwordCount < 3 && el.find("object").length == 0 && el.find("embed").length == 0
