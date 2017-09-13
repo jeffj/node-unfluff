@@ -289,10 +289,19 @@ module.exports =
 
       if parentParentNode
         updateNodeCount(parentParentNode, 1)
-        updateScore(parentParentNode, upscore / 2)
+        updateScore(parentParentNode, upscore)
 
         if parentNodes.indexOf(parentParentNode[0]) == -1
           parentNodes.push(parentParentNode[0])
+
+      parentParentParentNode = parentParentNode.parent()
+
+      if parentParentParentNode
+        updateNodeCount(parentParentParentNode, 1)
+        updateScore(parentParentParentNode, upscore)
+
+        if parentNodes.indexOf(parentParentParentNode[0]) == -1
+          parentNodes.push(parentParentParentNode[0])
 
       cnt += 1
       i += 1

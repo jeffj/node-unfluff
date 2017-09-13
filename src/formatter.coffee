@@ -87,7 +87,6 @@ convertToHTML = (doc, topNode) ->
         src = attrs['data-srcset']
 
       txts = txts.concat('<img src="'+src+'"/>')
-      console.log(txts, 'txts')
 
     txt = cleanParagraphText(node.text())
     txt = txt.replace(/(\w+\.)([A-Z]+)/, '$1 $2')
